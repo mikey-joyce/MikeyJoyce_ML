@@ -15,7 +15,7 @@ class BSAS:
 
         for i in range(1, data.shape[0]):
             # pick the closest cluster
-            distance, k = self.__compute_distances(data, clusters, i)
+            distance, k = self.find_cluster(data, clusters, i)
 
             # determine if a new cluster needs to be created
             if distance > thresh and m < (max_clusters - 1):
@@ -32,7 +32,7 @@ class BSAS:
 
         return membership
 
-    def __find_cluster(self, data, clusters, index):
+    def find_cluster(self, data, clusters, index):
         # get distance of current data point from each cluster center
         distances = []
         for k in range(len(clusters)):
@@ -84,4 +84,16 @@ class BSAS:
             theta += c
 
         return thresholds, cluster_counts
+
+    def pick_hyperparams(self, data, c=0.1, s=20):
+        thresholds, cluster_counts = self.optimize(data, c, s)
+
+        k = mode(cluster_counts)
+        avg, count = 0, 0
+        for i in range(len(thresholds) - 1):
+            if cluster_counts[i] == k:
+                avg += thresholds[i]
+                count += 1
+
+        return (avg/count), k
 

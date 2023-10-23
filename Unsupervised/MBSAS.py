@@ -16,7 +16,7 @@ class MBSAS(BSAS):
         # Cluster determination
         for i in range(1, data.shape[0]):
             # pick the closest cluster
-            distance, _ = self.__find_cluster(data, clusters, i)
+            distance, _ = self.find_cluster(data, clusters, i)
 
             # determine if a new cluster needs to be created
             if distance > thresh and m < (max_clusters - 1):
@@ -32,10 +32,43 @@ class MBSAS(BSAS):
         for i in range(data.shape[0]):
             if membership[i] == False:
                 # pick the closest cluster
-                distance, k = self.__find_cluster(data, clusters, i)
+                distance, k = self.find_cluster(data, clusters, i)
 
                 clusters[k].append(data[i])
                 # recompute center
                 size = len(clusters[k])
                 self.centers[k] = ((size - 1) * self.centers[k] + data[i]) / size
-                membership.append(k)
+                membership[i] = k
+
+        return membership
+
+    def optimize(self, data, c=0.1, s=20):
+        similarities = []
+        for i in range(data.shape[0]):
+            for j in range(data.shape[0]):
+                distance = np.linalg.norm(data[i] - data[j])
+                if distance != 0:
+                    similarities.append(distance)
+        a = min(similarities)
+        b = max(similarities)
+
+        thresholds, cluster_counts = [], []
+
+        theta = a
+        while theta <= b:
+            num_clusters = []
+            for i in range(s):
+                temp = data.copy()
+                np.random.shuffle(temp)
+                alg = MBSAS()
+                alg.fit(temp, theta)
+                num_clusters.append(len(alg.centers))
+
+            k_count = mode(num_clusters)
+            if k_count > 1:
+                thresholds.append(theta)
+                cluster_counts.append(k_count)
+
+            theta += c
+
+        return thresholds, cluster_counts
