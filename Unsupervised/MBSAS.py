@@ -1,7 +1,7 @@
 import numpy as np
 import math
 from statistics import mode
-from BSAS import BSAS
+from Unsupervised.BSAS import BSAS
 
 class MBSAS(BSAS):
     def __init__(self):
