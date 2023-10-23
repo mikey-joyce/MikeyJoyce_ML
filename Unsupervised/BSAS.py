@@ -14,14 +14,8 @@ class BSAS:
         membership = [0]
 
         for i in range(1, data.shape[0]):
-            # get distance of current data point from each cluster center
-            distances = []
-            for k in range(len(clusters)):
-                distances.append(np.linalg.norm(data[i] - self.centers[k]))
-
             # pick the closest cluster
-            distance = np.min(distances)
-            k = np.argmin(distances)
+            distance, k = self.__compute_distances(data, clusters, i)
 
             # determine if a new cluster needs to be created
             if distance > thresh and m < (max_clusters - 1):
@@ -37,6 +31,18 @@ class BSAS:
                 membership.append(k)
 
         return membership
+
+    def __find_cluster(self, data, clusters, index):
+        # get distance of current data point from each cluster center
+        distances = []
+        for k in range(len(clusters)):
+            distances.append(np.linalg.norm(data[index] - self.centers[k]))
+
+        # pick the closest cluster
+        distance = np.min(distances)
+        k = np.argmin(distances)
+
+        return distance, k
 
     def predict(self, data):
         membership = []
