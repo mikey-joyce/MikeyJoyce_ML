@@ -16,7 +16,7 @@ class MBSAS(BSAS):
         # Cluster determination
         for i in range(1, data.shape[0]):
             # pick the closest cluster
-            distance, _ = self.find_cluster(data, clusters, i)
+            distance, _ = self.find_cluster(data, i)
 
             # determine if a new cluster needs to be created
             if distance > thresh and m < (max_clusters - 1):
@@ -32,7 +32,7 @@ class MBSAS(BSAS):
         for i in range(data.shape[0]):
             if membership[i] == False:
                 # pick the closest cluster
-                distance, k = self.find_cluster(data, clusters, i)
+                distance, k = self.find_cluster(data, i)
 
                 clusters[k].append(data[i])
                 # recompute center
@@ -65,10 +65,9 @@ class MBSAS(BSAS):
                 num_clusters.append(len(alg.centers))
 
             k_count = mode(num_clusters)
-            if k_count > 1:
-                thresholds.append(theta)
-                cluster_counts.append(k_count)
+            if k_count <= 1:
+                return thresholds, cluster_counts
 
+            thresholds.append(theta)
+            cluster_counts.append(k_count)
             theta += c
-
-        return thresholds, cluster_counts
