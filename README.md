@@ -5,3 +5,4 @@
  - BSAS (basic sequential algorithmic scheme)
  - MBSAS (modified basic sequential algorithmic scheme)
  - TTSAS (A two threshold sequential algorithmic scheme)
+ - PCM (Possibilistic C-means clustering)
